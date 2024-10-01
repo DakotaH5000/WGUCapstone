@@ -2,8 +2,16 @@ import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Self
-from mentalHealthModel import run_model as mentalHealthModel
+
+#Import models
+from Models.mentalHealthModel import run_MentalHealth_model as mentalHealthModel
+from Models.phyiscalActivityModel import run_physicalActivity_model as physicalActivityModel
+from Models.techHoursModel import run_model as techHoursModel
+from Models.socialMediaModel import run_model as socialMediaModel
+from Models.gamingHoursModel import run_model as gamingHoursModel
+from Models.screentimeModel import run_model as screenTimeModel
+from Models.sleepHoursModel import run_model as sleepHoursModel
+from inputValidation import scrub_User_input
 
 root = Tk()
 root.title("Mental Health Predictor")
@@ -15,46 +23,56 @@ def open_file_dialog():
     return filename
 def run_model():
     errmsg=StringVar()
+    print(f'User input box is:{userManualData.get()}')
     if checkBoxStatus.get():
-        if scrub_User_input(selectedParameter.get()):
-            mentalHealthModel()
+        testData = scrub_User_input(selectedParameter.get(), userManualData.get())
+        print(testData)
+        match selectedTest:
+        #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], 
+        #Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
+        #Upon testing each model was created into their own model to allow for tuning of the random forest in order to reduce overfitting of the parameters
+            case  0: #Case matches position in Parameter list array, value being given to function matches position of value in csvfile row
+                mentalHealthModel()
+            case 1:
+                techHoursModel()
+            case 2:
+                socialMediaModel()
+            case 3:
+                gamingHoursModel()
+            case 4:
+                screenTimeModel()
+            case 5:
+                sleepHoursModel()
+            case 6:
+                physicalActivityModel()
+            case _:
+                errmsg.set(f'Unknown input option of {selectedTest} please choose a different option.')
+                print(errmsg.get())
     else:
         selectedTest = parameterList.index(selectedParameter.get())
-        print(f'Selected test is {selectedTest}')
+        print(f'Selected test is {selectedTest} {selectedParameter.get()}')
         match selectedTest:
+            #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], 
+            #Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
+            #Upon testing each model was created into their own model to allow for tuning of the random forest in order to reduce overfitting of the parameters
             case  0: #Case matches position in Parameter list array, value being given to function matches position of value in csvfile row
-                mentalHealthModel(7)
-            case 1:
-                mentalHealthModel(3)
-            case 2:
-                mentalHealthModel(4)
-            case 3:
-                mentalHealthModel(5)
-            case 4:
-                mentalHealthModel(6)
-            case 5:
-                mentalHealthModel(9)
-            case 6:
-                mentalHealthModel(10)
-            case 7:
                 mentalHealthModel()
+            case 1:
+                techHoursModel()
+            case 2:
+                socialMediaModel()
+            case 3:
+                gamingHoursModel()
+            case 4:
+                screenTimeModel()
+            case 5:
+                sleepHoursModel()
+            case 6:
+                physicalActivityModel()
             case _:
                 errmsg.set(f'Unknown input option of {selectedTest} please choose a different option.')
                 print(errmsg.get())
 
-#If user inputs manual parameters, ensure they are the correct data type/format
-def scrub_User_input(targetParameter, **manualDataEntry):
-    selectedTest = targetParameter
-    print(f'target param is {targetParameter}')
-    errmsg = StringVar()
-    errmsg.set("")
-    userData = manualDataEntry
-    if targetParameter == "Select":
-        errmsg.set("Select a parameter to test")
-        print(errmsg.get())
-        return False
-    
-    return True
 
 mainframe = ttk.Frame(root)
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -78,9 +96,9 @@ userFileButton = ttk.Button(mainframe, text='Choose a file', command=open_file_d
 
 #Allow the user to pick the Parameter to run the test with
 userChoiceLabel = ttk.Label(mainframe, text="Which Parameter to test?").grid(column=0, row=1)
-parameterList= ["Mental Health Level", "Technology Usage Hours", "Social Media Usage Hours", "Gaming Hours", "Screen Time Hours", "Default output of training", "Sleep Hours", "Physical Activity Hours"]
 selectedParameter= StringVar()
 selectedParameter.set("Select")
+parameterList= ["Mental Health Level", "Technology Usage Hours", "Social Media Usage Hours", "Gaming Hours", "Screen Time Hours", "Sleep Hours", "Physical Activity Hours"]
 parameterChoice = ttk.Menubutton(mainframe, textvariable=selectedParameter)
 parameterChoice.grid(column=1, row=1)
 
@@ -91,8 +109,9 @@ for param in parameterList:
     menu.add_command(label=param, command=lambda p=param: selectedParameter.set(p))
 
 
-userManualData = StringVar().set("")
-manualDataEntryBox = ttk.Entry(mainframe, textvariable=userManualData).grid(column=1, row=2)
+userManualData = StringVar()
+manualDataEntryBox = ttk.Entry(mainframe, textvariable=userManualData)
+manualDataEntryBox.grid(column=1, row=2)
 manualDataEntryLabel = ttk.Label(mainframe, text="Enter manual data, seperated by commas").grid(column=0, row=2)
 checkBoxStatus = tk.BooleanVar(value=FALSE)
 def printStatus():

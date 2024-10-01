@@ -14,7 +14,7 @@ from sklearn.metrics import classification_report, accuracy_score
         #print(', '.join(row))
 
 
-def run_model(**kwargs):
+def run_MentalHealth_model(**kwargs):
     # Load the CSV file into a DataFrame
     df = pd.read_csv('WGUCapstone/mental_health_and_technology_usage_2024.csv')
 
@@ -38,7 +38,7 @@ def run_model(**kwargs):
     df[df.columns[13]] = OnlineSupport_encoder.fit_transform(df[df.columns[13]])
     df = df.drop(df.columns[0], axis=1)
 
-    X = df.drop(df.columns[6], axis=1)  # All rows, all columns except the last
+    X = df.drop(df.columns[6], axis=1)  # All rows, all columns except the desired - 1
     y = df.iloc[:, 6]   # All rows, only the last column
 
     # Split the data into training and test sets
