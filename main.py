@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tkinter import ttk
 
 #Import models
+from DataModifiers.encoders import gender_encoder, Stress_Encoder ,SupportSystem_encoder, OnlineSupport_encoder, WorkEnviorment_Encoder, MentalHealth_Encoder
 from Models.mentalHealthModel import run_MentalHealth_model as mentalHealthModel
 from Models.phyiscalActivityModel import run_physicalActivity_model as physicalActivityModel
 from Models.techHoursModel import run_model as techHoursModel
@@ -11,7 +12,8 @@ from Models.socialMediaModel import run_model as socialMediaModel
 from Models.gamingHoursModel import run_model as gamingHoursModel
 from Models.screentimeModel import run_model as screenTimeModel
 from Models.sleepHoursModel import run_model as sleepHoursModel
-from inputValidation import scrub_User_input
+from DataModifiers.inputValidation import scrub_User_input, assign_Key_Value_Pairs
+
 
 root = Tk()
 root.title("Mental Health Predictor")
@@ -25,30 +27,33 @@ def run_model():
     errmsg=StringVar()
     print(f'User input box is:{userManualData.get()}')
     if checkBoxStatus.get():
-        testData = scrub_User_input(selectedParameter.get(), userManualData.get())
-        print(testData)
+        selectedTest = parameterList.index(selectedParameter.get())
+        scrubbedData = scrub_User_input(selectedParameter.get(), userManualData.get())
+        print(scrubbedData)
         match selectedTest:
         #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], 
         #Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
         #Upon testing each model was created into their own model to allow for tuning of the random forest in order to reduce overfitting of the parameters
             case  0: #Case matches position in Parameter list array, value being given to function matches position of value in csvfile row
-                mentalHealthModel()
+                mentalHealthModel(scrubbedData)
             case 1:
-                techHoursModel()
+                techHoursModel(scrubbedData)
             case 2:
-                socialMediaModel()
+                socialMediaModel(scrubbedData)
             case 3:
-                gamingHoursModel()
+                gamingHoursModel(scrubbedData)
             case 4:
-                screenTimeModel()
+                screenTimeModel(scrubbedData)
             case 5:
-                sleepHoursModel()
+                sleepHoursModel(scrubbedData)
             case 6:
-                physicalActivityModel()
+                physicalActivityModel(scrubbedData)
             case _:
                 errmsg.set(f'Unknown input option of {selectedTest} please choose a different option.')
                 print(errmsg.get())
+
     else:
+        print('Running with no parameters')
         selectedTest = parameterList.index(selectedParameter.get())
         print(f'Selected test is {selectedTest} {selectedParameter.get()}')
         match selectedTest:
