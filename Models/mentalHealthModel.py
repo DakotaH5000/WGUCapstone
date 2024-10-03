@@ -1,5 +1,7 @@
 import csv
 import threading
+import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -83,5 +85,11 @@ def run_MentalHealth_model(*args, **kwargs):
     y = le.fit_transform(y)
     # Inverse transform the predicted label back to the original category (if LabelEncoder was used)
     predicted_status_label = le.inverse_transform(predicted_status)
+    importances = rf.feature_importances_
+    Attribute = X.columns
+    importance_df = pd.DataFrame({'Attribute': Attribute, 'Importance': importances})
+    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
+    fig.show()
 
     print(f'Predicted Mental Health Status: {predicted_status_label[0]}')

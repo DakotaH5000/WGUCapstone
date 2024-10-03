@@ -1,5 +1,7 @@
 import csv
 import threading
+import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -9,7 +11,6 @@ from DataModifiers.encoders import gender_encoder, Stress_Encoder ,SupportSystem
 
 
 def run_model(*args, **kwargs):
-    print(f'args is:{args}')
     # Load the CSV file into a DataFrame
     df = pd.read_csv('WGUCapstone/mental_health_and_technology_usage_2024.csv')
 
@@ -38,11 +39,11 @@ def run_model(*args, **kwargs):
 
     # Initialize the Random Forest Classifier
     rf = RandomForestRegressor(
-        n_estimators=35,        # Number of trees in the forest
-        max_depth=8,          # Maximum depth of the trees (None means nodes are expanded until all leaves are pure)
+        n_estimators=100,        # Number of trees in the forest
+        max_depth= 5,          # Maximum depth of the trees (None means nodes are expanded until all leaves are pure)
         min_samples_split=8,     # Minimum number of samples required to split an internal node
         min_samples_leaf=3,      # Minimum number of samples required to be at a leaf node
-        random_state=42          # For reproducibility
+        random_state=42         # For reproducibility
     )
 
     # Train the model
@@ -66,7 +67,6 @@ def run_model(*args, **kwargs):
                                         'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 
                                         'Physical_Activity_Hours', 'Support_Systems_Access', 
                                         'Work_Environment_Impact', 'Online_Support_Usage'])
-        print(new_data)
     else:
         new_data = pd.DataFrame([[22, 1, 5, 9, 1, 6, 3, 7, 2, 1, 3, 0]], 
                                 columns=['Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours', 
@@ -74,7 +74,23 @@ def run_model(*args, **kwargs):
                                         'Physical_Activity_Hours', 'Support_Systems_Access', 
                                         'Work_Environment_Impact', 'Online_Support_Usage'])
 
-    # Use the model to predict mental health status
+    #Create a predicted Status off training and input
     predicted_status = rf.predict(new_data)
 
+    #Return a graph to the user to show weighting of data
+    importances = rf.feature_importances_
+    Attribute = X.columns
+    importance_df = pd.DataFrame({'Attribute': Attribute, 'Importance': importances})
+    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
+    fig.show()
+
+    predictions_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+
+    fig2 = px.scatter(predictions_df, x='Actual', y='Predicted')
+    fig2.add_shape(type='line', x0=predictions_df['Actual'].min(), x1=predictions_df['Actual'].max(), y0=predictions_df['Actual'].min(), y1=predictions_df['Actual'].max())
+    fig2.show()
+
+
     print(f'Predicted Gaming Hours: {predicted_status[0]}')
+    return predicted_status[0]
