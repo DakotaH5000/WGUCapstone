@@ -49,7 +49,6 @@ keys_and_indices = [
 def assign_Key_Value_Pairs(targetParameter, userInput):
     assigned_pairs = {}
     for key, index in keys_and_indices:
-        print(key)
         if key is not targetParameter and index < len(userInput):
                 assigned_pairs[key] = userInput[index]
     return assigned_pairs
@@ -60,31 +59,36 @@ def scrub_User_input(targetParameter, manualDataEntry):
     print(f'manualDataEntry split : {manualDataEntry}')
     userInput = assign_Key_Value_Pairs(targetParameter, manualDataEntry)
     for index, value in userInput.items():
-        if type(index) == str:
-            if index == "OnlineSupport":
-                scrubbedInput = OnlineSupport_encoder.transform([value])[0]
-                scrubbedInput = int(scrubbedInput)
-                userInput[index] = scrubbedInput
-            if index == "Gender":
-                scrubbedInput = gender_encoder.transform([value])[0]
-                scrubbedInput = int(scrubbedInput)
-                userInput[index] = scrubbedInput
-            if index == "SupportSystem":
-                scrubbedInput = SupportSystem_encoder.transform([value])[0]
-                scrubbedInput = int(scrubbedInput)
-                userInput[index] = scrubbedInput
-            if index == "Stress":
-                scrubbedInput = Stress_Encoder.transform([value])[0]
-                scrubbedInput = int(scrubbedInput)
-                userInput[index] = scrubbedInput
-            if index == "WorkEnvironment":
-                scrubbedInput = WorkEnviorment_Encoder.transform([value])[0]
-                scrubbedInput = int(scrubbedInput)
-                userInput[index] = scrubbedInput
-            if index == "Mental Health Level":
-                scrubbedInput = MentalHealth_Encoder.transform([value])[0]
-                scrubbedInput = int(scrubbedInput)
-                userInput[index] = scrubbedInput
+        print(value)
+        if type(value) == str:
+            try:
+                value = int(value)
+                if index == "OnlineSupport":
+                    scrubbedInput = OnlineSupport_encoder.transform([value])[0]
+                    scrubbedInput = int(scrubbedInput)
+                    userInput[index] = scrubbedInput
+                if index == "Gender":
+                    scrubbedInput = gender_encoder.transform([value])[0]
+                    scrubbedInput = int(scrubbedInput)
+                    userInput[index] = scrubbedInput
+                if index == "SupportSystem":
+                    scrubbedInput = SupportSystem_encoder.transform([value])[0]
+                    scrubbedInput = int(scrubbedInput)
+                    userInput[index] = scrubbedInput
+                if index == "Stress":
+                    scrubbedInput = Stress_Encoder.transform([value])[0]
+                    scrubbedInput = int(scrubbedInput)
+                    userInput[index] = scrubbedInput
+                if index == "WorkEnvironment":
+                    scrubbedInput = WorkEnviorment_Encoder.transform([value])[0]
+                    scrubbedInput = int(scrubbedInput)
+                    userInput[index] = scrubbedInput
+                if index == "Mental Health Level":
+                    scrubbedInput = MentalHealth_Encoder.transform([value])[0]
+                    scrubbedInput = int(scrubbedInput)
+                    userInput[index] = scrubbedInput
+            except ValueError:
+                continue
     print(f' userInput: {userInput}')
     return userInput
 #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], 

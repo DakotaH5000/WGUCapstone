@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from encoders import gender_encoder, Stress_Encoder ,SupportSystem_encoder, OnlineSupport_encoder, WorkEnviorment_Encoder, MentalHealth_Encoder
+from DataModifiers.encoders import gender_encoder, Stress_Encoder ,SupportSystem_encoder, OnlineSupport_encoder, WorkEnviorment_Encoder, MentalHealth_Encoder
 
 
 #with open ('WGUCapstone/mental_health_and_technology_usage_2024.csv') as csvfile:
@@ -15,7 +15,7 @@ from encoders import gender_encoder, Stress_Encoder ,SupportSystem_encoder, Onli
         #print(', '.join(row))
 
 
-def run_model(**kwargs):
+def run_model(*args, **kwargs):
     # Load the CSV file into a DataFrame
     df = pd.read_csv('WGUCapstone/mental_health_and_technology_usage_2024.csv')
 
@@ -65,11 +65,18 @@ def run_model(**kwargs):
     # Define a new set of data (example data for a single individual)
     #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
     # Define new data for prediction (make sure to match feature columns)
-    new_data = pd.DataFrame([[22, 1, 5, 9, 1, 6, 3, 7, 2, 1, 3, 0]], 
-                            columns=['Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours', 
-                                    'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 
-                                    'Physical_Activity_Hours', 'Support_Systems_Access', 
-                                    'Work_Environment_Impact', 'Online_Support_Usage'])
+    if args:
+        new_data = pd.DataFrame([kwargs],
+                                columns=['Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours', 
+                                        'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 
+                                        'Physical_Activity_Hours', 'Support_Systems_Access', 
+                                        'Work_Environment_Impact', 'Online_Support_Usage'])
+    else:
+        new_data = pd.DataFrame([[22, 1, 5, 9, 1, 6, 3, 7, 2, 1, 3, 0]], 
+                                columns=['Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours', 
+                                        'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 
+                                        'Physical_Activity_Hours', 'Support_Systems_Access', 
+                                        'Work_Environment_Impact', 'Online_Support_Usage'])
 
     # Use the model to predict mental health status
     predicted_status = rf.predict(new_data)
