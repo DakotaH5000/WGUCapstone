@@ -14,7 +14,7 @@ from sklearn.metrics import classification_report, accuracy_score, mean_squared_
         #print(', '.join(row))
 
 
-def run_model(**kwargs):
+def run_model(*args, **kwargs):
     # Load the CSV file into a DataFrame
     df = pd.read_csv('WGUCapstone/mental_health_and_technology_usage_2024.csv')
 
@@ -64,7 +64,12 @@ def run_model(**kwargs):
     # Define a new set of data (example data for a single individual)
     #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], 
     #Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
-    new_data = pd.DataFrame([[25, 1, 5, 2, 1, 6, 3, 7, 2, 1, 3, 0]], 
+    if args:
+        new_data = pd.DataFrame([kwargs],columns=['Age', 'Gender', 'Social_Media_Usage_Hours', 'Gaming_Hours', 
+                                    'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 'Physical_Activity_Hours', 
+                                    'Support_Systems_Access', 'Work_Environment_Impact', 'Online_Support_Usage'])
+    else:
+        new_data = pd.DataFrame([[25, 1, 5, 2, 1, 6, 3, 7, 2, 1, 3, 0]], 
                             columns=['Age', 'Gender', 'Social_Media_Usage_Hours', 'Gaming_Hours', 
                                     'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 'Physical_Activity_Hours', 
                                     'Support_Systems_Access', 'Work_Environment_Impact', 'Online_Support_Usage'])
