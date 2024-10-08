@@ -8,14 +8,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score
 
-
-#with open ('WGUCapstone/mental_health_and_technology_usage_2024.csv') as csvfile:
-    #spamreader = csv.reader(csvfile, delimiter=',')
-    #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
-    #for row in spamreader:
-        #print(', '.join(row))
-
-
 def run_MentalHealth_model(*args, **kwargs):
     # Load the CSV file into a DataFrame
     df = pd.read_csv('WGUCapstone/mental_health_and_technology_usage_2024.csv')
@@ -56,6 +48,8 @@ def run_MentalHealth_model(*args, **kwargs):
         random_state=42          # For reproducibility
     )
 
+    
+
     # Train the model
     rf.fit(X_train, y_train)
 
@@ -65,6 +59,7 @@ def run_MentalHealth_model(*args, **kwargs):
     print(classification_report(y_test, y_pred))
     print("Accuracy:", accuracy_score(y_test, y_pred))
 
+    print('Model accuracy score with 10 decision-trees : {0:0.4f}'. format(accuracy_score(y_test, y_pred)))
 
     # Define a new set of data (example data for a single individual)
     #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
@@ -74,6 +69,7 @@ def run_MentalHealth_model(*args, **kwargs):
         columns=['Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours', 'Gaming_Hours', 
                                     'Screen_Time_Hours', 'Stress_Level', 'Sleep_Hours', 'Physical_Activity_Hours', 
                                     'Support_Systems_Access', 'Work_Environment_Impact', 'Online_Support_Usage'])
+        new_data.astype('Int64')
     else:
         print('Running without kwargs')
         new_data = pd.DataFrame([[25, 1, 5, 2, 1, 6, 3, 7, 2, 1, 3, 0]], 
@@ -85,11 +81,14 @@ def run_MentalHealth_model(*args, **kwargs):
     y = le.fit_transform(y)
     # Inverse transform the predicted label back to the original category (if LabelEncoder was used)
     predicted_status_label = le.inverse_transform(predicted_status)
+    
     importances = rf.feature_importances_
     Attribute = X.columns
     importance_df = pd.DataFrame({'Attribute': Attribute, 'Importance': importances})
     importance_df = importance_df.sort_values(by='Importance', ascending=False)
-    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
+    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight for Mental Health', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
     fig.show()
 
+    predicitions = pd.DataFrame(y_test, y_pred)
+    fig2 = px.scatter(predicitions, )
     print(f'Predicted Mental Health Status: {predicted_status_label[0]}')

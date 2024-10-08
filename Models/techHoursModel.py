@@ -1,6 +1,7 @@
 import csv
 import threading
 import pandas as pd
+import plotly.express as px
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -46,10 +47,10 @@ def run_model(*args, **kwargs):
 
     # Initialize the Random Forest Classifier
     rf = RandomForestRegressor(
-        n_estimators=35,        # Number of trees in the forest
-        max_depth=8,          # Maximum depth of the trees (None means nodes are expanded until all leaves are pure)
+        n_estimators=100,        # Number of trees in the forest
+        max_depth=20,          # Maximum depth of the trees (None means nodes are expanded until all leaves are pure)
         min_samples_split=8,     # Minimum number of samples required to split an internal node
-        min_samples_leaf=3,      # Minimum number of samples required to be at a leaf node
+        min_samples_leaf=1,      # Minimum number of samples required to be at a leaf node
         random_state=42          # For reproducibility
     )
 
@@ -61,13 +62,11 @@ def run_model(*args, **kwargs):
 
 
 
-    # Define a new set of data (example data for a single individual)
-    #Rows: uID[0], Age[1], Gender[2], TechHours[3], SocialHours[4], GamingHours[5], Screentime[6], MentalHealth[7], 
-    #Stress[8], Sleephours[9], Physical activity[10], SupportSystem[11], WorkEnviorment[12], Online SUpport[13]
     if args:
         new_data = pd.DataFrame([kwargs],columns=['Age', 'Gender', 'Social_Media_Usage_Hours', 'Gaming_Hours', 
                                     'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 'Physical_Activity_Hours', 
                                     'Support_Systems_Access', 'Work_Environment_Impact', 'Online_Support_Usage'])
+        new_data.astype('Int64')
     else:
         new_data = pd.DataFrame([[25, 1, 5, 2, 1, 6, 3, 7, 2, 1, 3, 0]], 
                             columns=['Age', 'Gender', 'Social_Media_Usage_Hours', 'Gaming_Hours', 
@@ -79,3 +78,20 @@ def run_model(*args, **kwargs):
     # Inverse transform the predicted label back to the original category (if LabelEncoder was used)
 
     print(f'Predicted Tech Hours Status: {predicted_status[0]}')
+
+    #Create a predicted Status off training and input
+    predicted_status = rf.predict(new_data)
+
+    #Return a graph to the user to show weighting of data
+    importances = rf.feature_importances_
+    Attribute = X.columns
+    importance_df = pd.DataFrame({'Attribute': Attribute, 'Importance': importances})
+    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight for Gaming Hours', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
+    fig.show()
+
+    predictions_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+
+    fig2 = px.scatter(predictions_df, x='Actual', y='Predicted')
+    fig2.add_shape(type='line', x0=predictions_df['Actual'].min(), x1=predictions_df['Actual'].max(), y0=predictions_df['Actual'].min(), y1=predictions_df['Actual'].max())
+    fig2.show()

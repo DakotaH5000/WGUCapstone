@@ -1,5 +1,6 @@
 import csv
 import threading
+from numpy import float64
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -35,7 +36,7 @@ def run_model(*args, **kwargs):
     y = df[df.columns[4]].astype(float)   # All rows, only the last desired column
 
     # Split the data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
     # Initialize the Random Forest Classifier
     rf = RandomForestRegressor(
@@ -67,12 +68,14 @@ def run_model(*args, **kwargs):
                                         'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 
                                         'Physical_Activity_Hours', 'Support_Systems_Access', 
                                         'Work_Environment_Impact', 'Online_Support_Usage'])
+        new_data.astype('Int64')
     else:
         new_data = pd.DataFrame([[22, 1, 5, 9, 1, 6, 3, 7, 2, 1, 3, 0]], 
                                 columns=['Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours', 
                                         'Screen_Time_Hours', 'Mental_Health_Status', 'Stress_Level', 'Sleep_Hours', 
                                         'Physical_Activity_Hours', 'Support_Systems_Access', 
                                         'Work_Environment_Impact', 'Online_Support_Usage'])
+        print(new_data)
 
     #Create a predicted Status off training and input
     predicted_status = rf.predict(new_data)
@@ -82,7 +85,7 @@ def run_model(*args, **kwargs):
     Attribute = X.columns
     importance_df = pd.DataFrame({'Attribute': Attribute, 'Importance': importances})
     importance_df = importance_df.sort_values(by='Importance', ascending=False)
-    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
+    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight for Gaming Hours', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
     fig.show()
 
     predictions_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
