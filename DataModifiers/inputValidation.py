@@ -3,7 +3,7 @@ from tkinter import StringVar
 from sklearn.preprocessing import LabelEncoder    
 #from .encoders import gender_encoder, Stress_Encoder, SupportSystem_encoder, OnlineSupport_encoder, WorkEnviorment_Encoder, MentalHealth_Encoder
 
-
+#Issue arose when importing these models, moved into file during trouble shooting process, worked so wasn't a pressing issue currently.
 #Gender Encoder
 genders = ['Male', 'Female', 'Other']
 gender_encoder = LabelEncoder()
@@ -29,7 +29,7 @@ onlineSupport = ['No', 'Yes']
 OnlineSupport_encoder = LabelEncoder()
 OnlineSupport_encoder.fit(onlineSupport)
 
-
+#Used to assist in converting a user input into a dictionary to correlate inputs
 keys_and_indices = [
     ("Age", 0),
     ("Gender", 1),
@@ -46,6 +46,7 @@ keys_and_indices = [
     ("OnlineSupport", 12)
 ]
 
+#Assign keys_and_indices user values to allow for data transfomration
 def assign_Key_Value_Pairs(targetParameter, userInput):
     assigned_pairs = {}
     for key, index in keys_and_indices:
@@ -53,7 +54,7 @@ def assign_Key_Value_Pairs(targetParameter, userInput):
                 assigned_pairs[key] = userInput[index]
     return assigned_pairs
 
-
+#If input is not a type int, attempt to encode it, to a standardized form int for the model to investigate.
 async def scrub_User_input(targetParameter, manualDataEntry):
     manualDataEntry = [item.strip() for item in manualDataEntry.split(',')]
     userInput = assign_Key_Value_Pairs(targetParameter, manualDataEntry)
@@ -68,7 +69,6 @@ async def scrub_User_input(targetParameter, manualDataEntry):
                 case 'Gender':
                     try: 
                         userInput[key] = int(gender_encoder.transform([value])[0])
-                        print(f'gender type: {type(userInput[key])}')
                     except:
                         userInput[key] = int(value)
                 case "SupportSystem":
@@ -92,8 +92,8 @@ async def scrub_User_input(targetParameter, manualDataEntry):
                     except:
                         userInput[key] = int(value)
                 case _:
-                    userInput[key] = int(value)
-                    continue
+                        continue
         else:
-            userInput[key] = int(value)
+            continue
+    #Return user input in the form to be used future functions for analysis.
     return ', '.join(str(value) for value in userInput.values())

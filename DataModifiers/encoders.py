@@ -1,5 +1,6 @@
 from sklearn.preprocessing import LabelEncoder    
 
+#Handle user inputs that are in the form of a string converting them to numpy. They will be converted to int64 elsewhere. 
 #Gender Encoder
 genders = ['Male', 'Female', 'Other']
 gender_encoder = LabelEncoder()
