@@ -100,5 +100,8 @@ def run_model(*args, **kwargs):
     fig2 = px.scatter(predictions_df, x='Actual', y='Predicted')
     fig2.add_shape(type='line', x0=predictions_df['Actual'].min(), x1=predictions_df['Actual'].max(), y0=predictions_df['Actual'].min(), y1=predictions_df['Actual'].max())
     fig2.show()
+        #Create Heat Map
+    fig3 = px.density_heatmap(predictions_df, x="Actual", y="Predicted")
+    fig3.show()
     #Return an array of data points to create a visualization for the user.
     return [predicted_status[0], mse, mae, rsqrd]

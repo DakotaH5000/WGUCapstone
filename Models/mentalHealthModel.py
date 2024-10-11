@@ -10,7 +10,7 @@ from sklearn.metrics import classification_report, accuracy_score
 from DataModifiers.encoders import gender_encoder, Stress_Encoder ,SupportSystem_encoder, OnlineSupport_encoder, WorkEnviorment_Encoder, MentalHealth_Encoder
 
 def run_MentalHealth_model(*args, **kwargs):
-
+    
     def resource_path(relative_path):
         try:
             base_path = sys._MEIPASS
@@ -24,6 +24,7 @@ def run_MentalHealth_model(*args, **kwargs):
 
 # Now use pandas to read the CSV
     df = pd.read_csv(csv_file_path)
+    
     # Load the CSV file into a DataFrame
     #df = pd.read_csv('WGUCapstone/trainingData/mental_health_and_technology_usage_2024.csv')
 
@@ -96,10 +97,14 @@ def run_MentalHealth_model(*args, **kwargs):
     fig.show()
 
     #Create and display scatter plot to user
-    predicitions = pd.DataFrame(y_test, y_pred)
-    fig2 = px.scatter(predicitions, x='Actual', y='Predicted')
-    fig2.add_shape(type='line', x0=predicitions['Actual'].min(), x1=predicitions['Actual'].max(), y0=predicitions['Actual'].min(), y1=predicitions['Actual'].max())
-    result = predicted_status_label[0]
+    predictions_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+    #Return a scatter plot to show distriubtion of data
+    fig2 = px.scatter(predictions_df, x='Actual', y='Predicted')
+    fig2.add_shape(type='line', x0=predictions_df['Actual'].min(), x1=predictions_df['Actual'].max(), y0=predictions_df['Actual'].min(), y1=predictions_df['Actual'].max())
     fig2.show()
+    result = predicted_status_label[0]
+    #Create Heat Map
+    fig3 = px.density_heatmap(predictions_df, x="Actual", y="Predicted")
+    fig3.show()
     #Return an array of data that will be used to create displays for the user
     return [result, accuracy]

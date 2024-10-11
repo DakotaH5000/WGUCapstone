@@ -89,7 +89,7 @@ def run_model(*args, **kwargs):
     Attribute = X.columns
     importance_df = pd.DataFrame({'Attribute': Attribute, 'Importance': importances})
     importance_df = importance_df.sort_values(by='Importance', ascending=False)
-    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight for Gaming Hours', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
+    fig = px.bar(importance_df, x='Attribute', y='Importance', title='Attribute Weight for Social Media Hours', labels={'Importance': 'Importance Score', 'Attribute': 'Attribute'})
     fig.show()
 
     predictions_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
@@ -97,5 +97,7 @@ def run_model(*args, **kwargs):
     fig2 = px.scatter(predictions_df, x='Actual', y='Predicted')
     fig2.add_shape(type='line', x0=predictions_df['Actual'].min(), x1=predictions_df['Actual'].max(), y0=predictions_df['Actual'].min(), y1=predictions_df['Actual'].max())
     fig2.show()
-
+    #Create Heat Map
+    fig3 = px.density_heatmap(predictions_df, x="Actual", y="Predicted")
+    fig3.show()
     return [predicted_status[0], mse, mae, rsqrd]
